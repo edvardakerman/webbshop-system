@@ -92,7 +92,6 @@ class View
     {
         $this->viewOneCard($card);
         $this->viewCardDetails($card);
-        $this->goBackOrForward();
     }
 
     public function viewAllCards($cards)
@@ -170,21 +169,6 @@ class View
                     </div>
                 </div>
             </div>
-        HTML;
-
-        echo $html;
-    }
-
-    private function goBackOrForward() {
-        $html = <<<HTML
-        <div class="d-flex justify-content-around col-md-12">
-            <a href="index.php?page=detailpage&id=$_GET[id]">
-                <button onclick="thePreviousCard()" type="button" class="btn btn-info btn-lg">Previous Card</button>
-            </a><a href="index.php?page=detailpage&id=$_GET[id]">
-                <button type="button" class="btn btn-primary btn-lg">Next card</button>
-            </a>
-        </div>
-
         HTML;
 
         echo $html;
