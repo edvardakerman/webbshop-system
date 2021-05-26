@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 4.9.5
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3307
--- Generation Time: May 18, 2021 at 03:43 PM
--- Server version: 10.4.18-MariaDB
--- PHP Version: 8.0.3
+-- Host: localhost:3306
+-- Generation Time: May 20, 2021 at 09:31 AM
+-- Server version: 5.7.24
+-- PHP Version: 7.4.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,30 +19,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `webshop`
+-- Database: `webshop2`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `admin`
---
-
-CREATE TABLE `admin` (
-  `id` int(11) NOT NULL,
-  `FirstName` varchar(55) NOT NULL,
-  `LastName` varchar(55) NOT NULL,
-  `Email` varchar(55) NOT NULL,
-  `RegisterDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `password` varchar(55) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `admin`
---
-
-INSERT INTO `admin` (`id`, `FirstName`, `LastName`, `Email`, `RegisterDate`, `password`) VALUES
-(1, 'test', 'test', 'test@test.se', '2021-05-12 09:47:45', 'test');
 
 -- --------------------------------------------------------
 
@@ -54,16 +33,19 @@ CREATE TABLE `customers` (
   `FirstName` varchar(55) NOT NULL,
   `LastName` varchar(55) NOT NULL,
   `Email` varchar(55) NOT NULL,
-  `RegisterDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `password` varchar(55) NOT NULL
+  `RegisterDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `password` varchar(55) NOT NULL,
+  `isAdmin` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`id`, `FirstName`, `LastName`, `Email`, `RegisterDate`, `password`) VALUES
-(1, 'Georgios', 'Goussis', 'ulidin@gmail.com', '2021-05-16 10:20:52', '123456');
+INSERT INTO `customers` (`id`, `FirstName`, `LastName`, `Email`, `RegisterDate`, `password`, `isAdmin`) VALUES
+(1, 'Georgios', 'Goussis', 'ulidin@gmail.com', '2021-05-16 10:20:52', '123456', NULL),
+(2, 'ed', 'ed', 'ed@mail.se', '2021-05-19 09:47:52', '123', 1),
+(3, 'Niklas', 'Söderberg', 'nma.prob@gmail.com', '2021-05-19 11:40:30', '123', NULL);
 
 -- --------------------------------------------------------
 
@@ -79,6 +61,33 @@ CREATE TABLE `orderitems` (
   `price` decimal(11,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `orderitems`
+--
+
+INSERT INTO `orderitems` (`id`, `orderId`, `productId`, `amount`, `price`) VALUES
+(21, 17, 1, 1, '41'),
+(22, 17, 2, 1, '3'),
+(23, 17, 3, 1, '5'),
+(24, 18, 1, 1, '41'),
+(25, 18, 3, 1, '5'),
+(26, 19, 6, 1, '89'),
+(27, 20, 3, 2, '5'),
+(28, 20, 4, 1, '3'),
+(29, 21, 2, 1, '3'),
+(30, 22, 1, 1, '41'),
+(31, 23, 2, 1, '3'),
+(32, 23, 6, 1, '89'),
+(33, 24, 1, 5, '41'),
+(34, 25, 2, 1, '3'),
+(35, 25, 6, 1, '89'),
+(36, 26, 1, 1, '41'),
+(37, 27, 2, 1, '3'),
+(38, 28, 6, 1, '89'),
+(39, 28, 1, 1, '41'),
+(40, 28, 11, 1, '17'),
+(41, 29, 3, 1, '5');
+
 -- --------------------------------------------------------
 
 --
@@ -88,9 +97,28 @@ CREATE TABLE `orderitems` (
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `customerId` int(11) NOT NULL,
-  `RegisterDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `RegisterDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `orderStatus` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `customerId`, `RegisterDate`, `orderStatus`) VALUES
+(17, 3, '2021-05-19 11:40:57', NULL),
+(18, 3, '2021-05-19 12:32:53', NULL),
+(19, 3, '2021-05-19 13:13:23', NULL),
+(20, 2, '2021-05-19 13:18:21', NULL),
+(21, 2, '2021-05-19 13:33:29', NULL),
+(22, 3, '2021-05-19 14:38:58', NULL),
+(23, 3, '2021-05-19 21:51:14', NULL),
+(24, 3, '2021-05-19 22:58:44', NULL),
+(25, 3, '2021-05-19 23:03:59', NULL),
+(26, 3, '2021-05-19 23:05:29', NULL),
+(27, 3, '2021-05-19 23:05:58', NULL),
+(28, 3, '2021-05-19 23:47:54', NULL),
+(29, 3, '2021-05-20 09:35:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -156,13 +184,6 @@ INSERT INTO `products` (`id`, `name`, `amount`, `description`, `price`, `image`,
 --
 
 --
--- Indexes for table `admin`
---
-ALTER TABLE `admin`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`);
-
---
 -- Indexes for table `customers`
 --
 ALTER TABLE `customers`
@@ -173,8 +194,7 @@ ALTER TABLE `customers`
 --
 ALTER TABLE `orderitems`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_orders` (`orderId`),
-  ADD KEY `fk_products` (`productId`);
+  ADD KEY `fk_orders` (`orderId`);
 
 --
 -- Indexes for table `orders`
@@ -194,22 +214,22 @@ ALTER TABLE `products`
 --
 
 --
--- AUTO_INCREMENT for table `admin`
---
-ALTER TABLE `admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `orderitems`
+--
+ALTER TABLE `orderitems`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -225,8 +245,7 @@ ALTER TABLE `products`
 -- Constraints for table `orderitems`
 --
 ALTER TABLE `orderitems`
-  ADD CONSTRAINT `fk_orders` FOREIGN KEY (`orderId`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `fk_products` FOREIGN KEY (`productId`) REFERENCES `products` (`id`);
+  ADD CONSTRAINT `fk_orders` FOREIGN KEY (`orderId`) REFERENCES `orders` (`id`);
 
 --
 -- Constraints for table `orders`
